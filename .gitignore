@@ -1,0 +1,10 @@
+.terraform
+.terraform*
+*.tfstate
+*.tfstate.backup
+*.tfstate.*
+bin
+*.lock.hcl
+terraform.tfvars
+kubeconfig
+kubeconfig.yaml
