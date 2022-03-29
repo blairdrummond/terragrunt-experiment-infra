@@ -29,6 +29,11 @@ terraform {
       source = "hashicorp/random"
       version = "3.1.0"
     }
+
+    docker = {
+      source  = "kreuzwerker/docker"
+      version = "2.16.0"
+    }
   }
 }
 
@@ -36,21 +41,27 @@ provider "k3d" {
   # Configuration options
 }
 
-#provider "kubernetes" {
-#  host = k3d_cluster.cluster.credentials.host
-#
-#  client_certificate     = k3d_cluster.cluster.credentials.client_certificate
-#  client_key             = k3d_cluster.cluster.credentials.client_key
-#  cluster_ca_certificate = k3d_cluster.cluster.credentials.cluster_ca_certificate
-#}
-#
-#
-#provider "helm" {
-#  kubernetes {
-#    host = k3d_cluster.cluster.credentials.host
-#
-#    client_certificate     = k3d_cluster.cluster.credentials.client_certificate
-#    client_key             = k3d_cluster.cluster.credentials.client_key
-#    cluster_ca_certificate = k3d_cluster.cluster.credentials.cluster_ca_certificate
-#  }
-#}
+# Probably linux only. No idea how this would work on
+# MacOS or Windows/WSL...
+provider "docker" {
+  host = "unix:///var/run/docker.sock"
+}
+
+provider "kubernetes" {
+  host = k3d_cluster.cluster.credentials[0].host
+
+  client_certificate     = k3d_cluster.cluster.credentials[0].client_certificate
+  client_key             = k3d_cluster.cluster.credentials[0].client_key
+  cluster_ca_certificate = k3d_cluster.cluster.credentials[0].cluster_ca_certificate
+}
+
+
+provider "helm" {
+  kubernetes {
+    host = k3d_cluster.cluster.credentials[0].host
+
+    client_certificate     = k3d_cluster.cluster.credentials[0].client_certificate
+    client_key             = k3d_cluster.cluster.credentials[0].client_key
+    cluster_ca_certificate = k3d_cluster.cluster.credentials[0].cluster_ca_certificate
+  }
+}
