@@ -5,4 +5,5 @@ init:
 
 plan apply destroy: init
 	export TF_VAR_cluster_name=$(CLUSTER_NAME); \
-		terraform $@
+	. ./secrets.env ; \
+	cd environments && terragrunt run-all $@
