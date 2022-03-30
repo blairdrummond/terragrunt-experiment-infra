@@ -1,7 +1,7 @@
 CLUSTER_NAME := liatrio-demo
 
 init:
-	terraform init
+	cd environments && terragrunt run-all $@
 
 plan apply destroy: init
 	export TF_VAR_cluster_name=$(CLUSTER_NAME); \
