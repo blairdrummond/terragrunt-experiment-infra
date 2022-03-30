@@ -64,3 +64,21 @@ YAML
 
   depends_on = [helm_release.argocd]
 }
+
+
+resource "kubernetes_secret" "argocd_manifests_repo_key" {
+  metadata {
+    name = "manifests-repo-key"
+    namespace = "argocd"
+    labels = {
+      "argocd.argoproj.io/secret-type" = "repository"
+    }
+  }
+
+  data = {
+    type = "git"
+    url = "https://github.com/blairdrummond/terragrunt-experiment-manifests.git"
+    username = var.github_username
+    password = var.github_deploy_token
+  }
+}

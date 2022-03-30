@@ -6,8 +6,11 @@ variable "github_username" {
 variable "github_repo" {
   description = "Your github argocd manifests repo"
 }
-variable "github_token" {
+variable "github_read_token" {
   description = "Github Read Token"
+}
+variable "github_deploy_token" {
+  description = "Github Deploy Token"
 }
 
 
@@ -29,15 +32,16 @@ variable "kubernetes_host" {
   description = "Kubernetes API endpoint"
   sensitive   = true
 }
-
 variable "kubernetes_client_certificate" {
   sensitive   = true
 }
-
 variable "kubernetes_client_key" {
   sensitive   = true
 }
-
 variable "kubernetes_cluster_ca_certificate" {
   sensitive   = true
+}
+
+variable "cluster_name" {
+  description = "E.g. dev or prod"
 }

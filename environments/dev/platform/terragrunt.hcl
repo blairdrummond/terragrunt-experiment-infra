@@ -59,6 +59,10 @@ provider "helm" {
     cluster_ca_certificate = var.kubernetes_cluster_ca_certificate
   }
 }
+
+provider "github" {
+  token = var.github_deploy_token
+}
 EOF
 }
 

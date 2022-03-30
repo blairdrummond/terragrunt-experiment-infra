@@ -12,7 +12,7 @@ resource "kubernetes_secret" "github_token" {
   }
 
   data = {
-    "token" = var.github_token
+    "token" = var.github_deploy_token
   }
 }
 
