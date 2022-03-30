@@ -11,12 +11,6 @@ data "docker_network" "network" {
   depends_on = [k3d_cluster.cluster]
 }
 
-
-locals {
-  ip_blocks = split(".", tolist(data.docker_network.network.ipam_config)[0].gateway)
-}
-
-
 resource "kubernetes_config_map" "metallb_config" {
   metadata {
     name = "config"
@@ -29,16 +23,16 @@ address-pools:
 - name: default
   protocol: layer2
   addresses:
-  - ${local.ip_blocks[0]}.${local.ip_blocks[1]}.200-${local.ip_blocks[0]}.${local.ip_blocks[1]}.255.250
+  - ${tolist(data.docker_network.network.ipam_config)[0].subnet}
 EOF
   }
 }
 
 resource "helm_release" "metallb" {
   name       = "metallb"
-  repository = "https://metallb.github.io/metallb"
+  repository = "https://charts.bitnami.com/bitnami"
   chart      = "metallb"
-  version    = "0.12.1"
+  version    = "2.6.10"
 
   timeout = 600
 
@@ -47,4 +41,9 @@ resource "helm_release" "metallb" {
   namespace       = kubernetes_namespace.metallb.metadata[0].name
 
   depends_on = [kubernetes_namespace.metallb]
+
+  set {
+    name  = "existingConfigMap"
+    value = "config"
+  }
 }
