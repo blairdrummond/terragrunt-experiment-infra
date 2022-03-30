@@ -7,6 +7,8 @@ resource "kubernetes_namespace" "metallb" {
 
 data "docker_network" "network" {
   name = "k3d-${var.cluster_name}"
+
+  depends_on = [k3d_cluster.cluster]
 }
 
 

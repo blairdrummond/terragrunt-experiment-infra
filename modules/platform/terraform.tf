@@ -31,19 +31,3 @@ terraform {
     }
   }
 }
-
-provider "kubernetes" {
-  config_path    = "kubeconfig.yaml"
-  config_context = var.kubecontext
-}
-
-provider "kubectl" {
-  config_path    = "kubeconfig.yaml"
-  config_context = var.kubecontext
-}
-
-provider "helm" {
-  kubernetes {
-    config_path = "kubeconfig.yaml"
-  }
-}

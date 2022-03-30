@@ -4,8 +4,6 @@ resource "kubernetes_namespace" "argo_events" {
   }
 }
 
-
-
 # READ Token
 resource "kubernetes_secret" "github_token" {
   metadata {
