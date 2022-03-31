@@ -40,6 +40,10 @@ If you change the github username and docker username, you will also need to rep
 
 The git credentials are to read the private repositories, and argo events uses a credential to auto-configure a github webhook. If the repos become public, these would also be unnecessary.
 
+#### DNS
+
+I pointed `happylittlecloud.xyz` to the digitalocean nameservers in advance so that I can use the domain for the purpose of this demo. If you have a free domain, you can use it --- you need to modify this repo, and unfortunately **you also will need to modify the annotation on the ingress controller in the manifests repo**.
+
 
 ### Tools
 
