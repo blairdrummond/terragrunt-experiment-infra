@@ -13,9 +13,7 @@ resource "helm_release" "argocd" {
   timeout = 600
   cleanup_on_fail = true
   force_update    = true
-  namespace       = "argocd"
-
-  depends_on = [kubernetes_namespace.argocd]
+  namespace       = kubernetes_namespace.argocd.id
 
   values = [<<EOF
 server:
@@ -34,7 +32,7 @@ resource "helm_release" "argocd_applicationset" {
   timeout = 600
   cleanup_on_fail = true
   force_update    = true
-  namespace       = "argocd"
+  namespace       = kubernetes_namespace.argocd.id
 
   depends_on = [helm_release.argocd]
 }
@@ -69,7 +67,7 @@ YAML
 resource "kubernetes_secret" "argocd_manifests_repo_key" {
   metadata {
     name = "manifests-repo-key"
-    namespace = "argocd"
+    namespace = kubernetes_namespace.argocd.id
     labels = {
       "argocd.argoproj.io/secret-type" = "repository"
     }

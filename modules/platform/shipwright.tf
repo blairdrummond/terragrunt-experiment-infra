@@ -48,6 +48,8 @@ resource "kubernetes_secret" "docker_registry_write" {
   }
 
   type = "kubernetes.io/dockerconfigjson"
+
+  depends_on = [kubernetes_namespace.shipwright_build]
 }
 
 resource "kubernetes_secret" "shipwright_github_token" {
