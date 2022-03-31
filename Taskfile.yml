@@ -1,0 +1,315 @@
+version: "3"
+
+dotenv: ['secrets.env']
+env:
+  TF_VAR_cluster_name: liatrio-demo
+
+silent: false
+vars:
+  KUBECTL: kubectl 
+  GRUNT: terragrunt
+  DOCKER_SOCK: /var/run/docker.sock
+
+  RESET: \033[0m
+  BLACK: \033[:0;30m
+  RED: \033[:0;31m
+  GREEN: \033[:0;32m
+
+# TODO: Create a subtaskfile and
+# use overrides/inheritance?
+tasks:
+  all:
+    desc: |
+      Create a dev and prod cluster 
+    cmds:
+      - task: dev
+      - task: prod
+
+  destroy:
+    desc: |
+      Destroy a dev and prod cluster 
+    cmds:
+      - task: dev:cluster:destroy
+      - task: prod:cluster:destroy
+
+  dev:
+    desc: |
+        Create a local k3d cluster. 
+        Requires a docker socket (linux only?)
+    cmds:
+      - task: dev:cluster:apply
+      - task: dev:platform:apply
+    preconditions:
+      - test -S {{.DOCKER_SOCK}}
+
+  prod:
+    desc: |
+      Create a digitalocean cluster. 
+    cmds:
+      - task: prod:cluster:apply
+      - task: prod:platform:apply
+
+
+  ##################
+  ### Dev cluster
+  ##################
+  dev:cluster:init:
+    desc: terraform {{.OP}} the {{.ENVIRONMENT}} {{.MODULE}}
+    dir: environments/{{.ENVIRONMENT}}/{{.MODULE}}
+    cmds:
+    - "{{.GRUNT}} {{.OP}}"
+    vars:
+      ENVIRONMENT: dev
+      MODULE: cluster
+      OP: init
+
+  dev:cluster:plan:
+    desc: terraform {{.OP}} the {{.ENVIRONMENT}} {{.MODULE}}
+    dir: environments/{{.ENVIRONMENT}}/{{.MODULE}}
+    deps: ["{{.ENVIRONMENT}}:{{.MODULE}}:init"]
+    cmds:
+    - "{{.GRUNT}} {{.OP}}"
+    vars:
+      ENVIRONMENT: dev
+      MODULE: cluster
+      OP: plan
+
+  dev:cluster:apply:
+    desc: terraform {{.OP}} the {{.ENVIRONMENT}} {{.MODULE}}
+    dir: environments/{{.ENVIRONMENT}}/{{.MODULE}}
+    deps: ["{{.ENVIRONMENT}}:{{.MODULE}}:init"]
+    cmds:
+    - "{{.GRUNT}} {{.OP}}"
+    vars:
+      ENVIRONMENT: dev
+      MODULE: cluster
+      OP: apply
+
+  # Note! Dependency order is reversed
+  dev:cluster:destroy:
+    desc: terraform {{.OP}} the {{.ENVIRONMENT}} {{.MODULE}}
+    dir: environments/{{.ENVIRONMENT}}/{{.MODULE}}
+    deps: ["{{.ENVIRONMENT}}:platform:destroy"]
+    cmds:
+    - "{{.GRUNT}} {{.OP}}"
+    vars:
+      ENVIRONMENT: dev
+      MODULE: cluster
+      OP: destroy
+
+
+
+  ################
+  ## Dev platform
+  dev:platform:init:
+    desc: terraform {{.OP}} the {{.ENVIRONMENT}} {{.MODULE}}
+    dir: environments/{{.ENVIRONMENT}}/{{.MODULE}}
+    cmds:
+    - "{{.GRUNT}} {{.OP}}"
+    vars:
+      ENVIRONMENT: dev
+      MODULE: platform
+      OP: init
+
+  dev:platform:plan:
+    desc: terraform {{.OP}} the {{.ENVIRONMENT}} {{.MODULE}}
+    dir: environments/{{.ENVIRONMENT}}/{{.MODULE}}
+    deps: ["{{.ENVIRONMENT}}:{{.MODULE}}:init", "{{.ENVIRONMENT}}:cluster:apply"]
+    cmds:
+    - "{{.GRUNT}} {{.OP}}"
+    vars:
+      ENVIRONMENT: dev
+      MODULE: platform
+      OP: plan
+
+  dev:platform:apply:
+    interactive: true
+    desc: terraform {{.OP}} the {{.ENVIRONMENT}} {{.MODULE}}
+    dir: environments/{{.ENVIRONMENT}}/{{.MODULE}}
+    deps: ["{{.ENVIRONMENT}}:{{.MODULE}}:init", "{{.ENVIRONMENT}}:cluster:apply"]
+    cmds:
+    - "{{.GRUNT}} {{.OP}}"
+    vars:
+      ENVIRONMENT: dev
+      MODULE: platform
+      OP: apply
+
+  # This times out
+  # # Note! Dependency order is reversed
+  # dev:platform:destroy:
+  #   interactive: true
+  #   desc: terraform {{.OP}} the {{.ENVIRONMENT}} {{.MODULE}}
+  #   dir: environments/{{.ENVIRONMENT}}/{{.MODULE}}
+  #   cmds:
+  #   - "{{.GRUNT}} {{.OP}}"
+  #   vars:
+  #     ENVIRONMENT: dev
+  #     MODULE: platform
+  #     OP: destroy
+
+
+  dev:platform:destroy:
+    desc: terraform {{.OP}} the {{.ENVIRONMENT}} {{.MODULE}}
+    interactive: true
+    dir: environments/{{.ENVIRONMENT}}/{{.MODULE}}
+    cmds:
+    - cmd: "rm -fi terraform.tfstate terraform.tfstate.backup"
+      ignore_error: true
+    vars:
+      ENVIRONMENT: dev
+      MODULE: platform
+      OP: destroy
+
+
+
+  ##################
+  ### Prod cluster
+  ##################
+  prod:cluster:init:
+    desc: terraform {{.OP}} the {{.ENVIRONMENT}} {{.MODULE}}
+    dir: environments/{{.ENVIRONMENT}}/{{.MODULE}}
+    cmds:
+    - "{{.GRUNT}} {{.OP}}"
+    vars:
+      ENVIRONMENT: prod
+      MODULE: cluster
+      OP: init
+
+  prod:cluster:plan:
+    desc: terraform {{.OP}} the {{.ENVIRONMENT}} {{.MODULE}}
+    dir: environments/{{.ENVIRONMENT}}/{{.MODULE}}
+    deps: ["{{.ENVIRONMENT}}:{{.MODULE}}:init"]
+    cmds:
+    - "{{.GRUNT}} {{.OP}}"
+    vars:
+      ENVIRONMENT: prod
+      MODULE: cluster
+      OP: plan
+
+  prod:cluster:apply:
+    interactive: true
+    desc: terraform {{.OP}} the {{.ENVIRONMENT}} {{.MODULE}}
+    dir: environments/{{.ENVIRONMENT}}/{{.MODULE}}
+    deps: ["{{.ENVIRONMENT}}:{{.MODULE}}:init"]
+    cmds:
+    - "{{.GRUNT}} {{.OP}}"
+    vars:
+      ENVIRONMENT: prod
+      MODULE: cluster
+      OP: apply
+
+  prod:cluster:destroy:
+    interactive: true
+    desc: terraform {{.OP}} the {{.ENVIRONMENT}} {{.MODULE}}
+    dir: environments/{{.ENVIRONMENT}}/{{.MODULE}}
+    cmds:
+    - "{{.GRUNT}} {{.OP}}"
+    vars:
+      ENVIRONMENT: prod
+      MODULE: cluster
+      OP: destroy
+
+
+  ################
+  ## Prod platform
+  prod:platform:init:
+    desc: terraform {{.OP}} the {{.ENVIRONMENT}} {{.MODULE}}
+    dir: environments/{{.ENVIRONMENT}}/{{.MODULE}}
+    cmds:
+    - "{{.GRUNT}} {{.OP}}"
+    vars:
+      ENVIRONMENT: prod
+      MODULE: platform
+      OP: init
+
+  prod:platform:plan:
+    desc: terraform {{.OP}} the {{.ENVIRONMENT}} {{.MODULE}}
+    dir: environments/{{.ENVIRONMENT}}/{{.MODULE}}
+    deps: ["{{.ENVIRONMENT}}:{{.MODULE}}:init", "{{.ENVIRONMENT}}:cluster:apply"]
+    cmds:
+    - "{{.GRUNT}} {{.OP}}"
+    vars:
+      ENVIRONMENT: prod
+      MODULE: platform
+      OP: plan
+
+  prod:platform:apply:
+    interactive: true
+    desc: terraform {{.OP}} the {{.ENVIRONMENT}} {{.MODULE}}
+    dir: environments/{{.ENVIRONMENT}}/{{.MODULE}}
+    deps: ["{{.ENVIRONMENT}}:{{.MODULE}}:init", "{{.ENVIRONMENT}}:cluster:apply"]
+    cmds:
+    - "{{.GRUNT}} {{.OP}}"
+    vars:
+      ENVIRONMENT: prod
+      MODULE: platform
+      OP: apply
+
+  # # This destroy operation times-out
+  # # We'll skip it.
+  #
+  # # Note! Dependency order is reversed
+  # prod:platform:destroy:
+  #   desc: terraform {{.OP}} the {{.ENVIRONMENT}} {{.MODULE}}
+  #   dir: environments/{{.ENVIRONMENT}}/{{.MODULE}}
+  #   cmds:
+  #   - "{{.GRUNT}} {{.OP}}"
+  #   vars:
+  #     ENVIRONMENT: prod
+  #     MODULE: platform
+  #     OP: destroy
+
+  prod:platform:destroy:
+    desc: terraform {{.OP}} the {{.ENVIRONMENT}} {{.MODULE}}
+    interactive: true
+    dir: environments/{{.ENVIRONMENT}}/{{.MODULE}}
+    deps: ["{{.ENVIRONMENT}}:cluster:destroy"]
+    cmds:
+    - cmd: "rm -fi terraform.tfstate terraform.tfstate.backup"
+      ignore_error: true
+    vars:
+      ENVIRONMENT: prod
+      MODULE: platform
+      OP: destroy
+
+  #################################
+  ### Utilities / Port-Forwards
+  #################################
+  login:argo-workflows:
+    desc: Get the Argo Workflows token
+    interactive: true
+    cmds:
+      - |
+        printf '{{.GREEN}}' >&2
+        echo '=== Argo Bearer Token ========'
+        echo '{{.ARGO_TOKEN}}'
+        echo '========================='
+      - "{{.KUBECTL}} port-forward -n argo svc/argo-server 2746:2746"
+    vars:
+      ARGO_POD:
+        sh: |
+          {{.KUBECTL}} get pod -n argo | grep argo-server | awk '{print $1}'
+      ARGO_TOKEN:
+        sh: |
+          {{.KUBECTL}} -n argo exec {{.ARGO_POD}} -- argo auth token
+  
+  login:argo-cd:
+    desc: Get the Argo Workflows token
+    interactive: true
+    cmds:
+      - |
+        printf '{{.GREEN}}' >&2
+        echo '=== ArgoCD Login ========'
+        echo 'username: admin'
+        echo 'password: {{.ARGOCD_PASSWORD}}'
+        echo '========================='
+        printf '{{.RESET}}' >&2
+      - "{{.KUBECTL}} port-forward -n argocd svc/argocd-server 8000:80"
+    vars:
+      ARGOCD_PASSWORD:
+        sh: |
+          {{.KUBECTL}} get secret argocd-initial-admin-secret \
+            -n argocd \
+            -o jsonpath="{.data.password}" | base64 -d
+
+
