@@ -4,7 +4,6 @@ resource "kubernetes_namespace" "shipwright_build" {
   }
 }
 
-
 resource "kubernetes_secret" "docker_registry_read" {
   for_each = toset([
     "shipwright-build",
@@ -47,4 +46,22 @@ resource "kubernetes_secret" "docker_registry_write" {
   }
 
   type = "kubernetes.io/dockerconfigjson"
+}
+
+resource "kubernetes_secret" "shipwright_github_token" {
+  metadata {
+    name = "github-token"
+    namespace = "shipwright-build"
+
+    annotations = {
+      "build.shipwright.io/referenced.secret" = "true"
+    }
+  }
+
+  data = {
+    username = var.github_username
+    password = var.github_deploy_token
+  }
+
+  type = "kubernetes.io/basic-auth"
 }
