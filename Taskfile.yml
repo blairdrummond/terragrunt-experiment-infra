@@ -13,6 +13,8 @@ vars:
   RESET: \033[0m
   BLACK: \033[:0;30m
   RED: \033[:0;31m
+  BLUE: \033[:0;34m
+  YELLOW: \033[:0;33m
   GREEN: \033[:0;32m
 
 # TODO: Create a subtaskfile and
@@ -281,11 +283,15 @@ tasks:
     cmds:
       - |
         printf '{{.GREEN}}' >&2
+        echo '=== kube context ========'
+        echo '{{.RED}}{{.KUBECTX}}{{.GREEN}}'
         echo '=== Argo Bearer Token ========'
         echo '{{.ARGO_TOKEN}}'
         echo '========================='
       - "{{.KUBECTL}} port-forward -n argo svc/argo-server 2746:2746"
     vars:
+      KUBECTX:
+        sh: "{{.KUBECTL}} config current-context"
       ARGO_POD:
         sh: |
           {{.KUBECTL}} get pod -n argo | grep argo-server | awk '{print $1}'
@@ -296,16 +302,25 @@ tasks:
   login:argo-cd:
     desc: Get the Argo Workflows token
     interactive: true
+    silent: true
     cmds:
       - |
-        printf '{{.GREEN}}' >&2
+        printf '{{.BLUE}}' >&2
+        echo '=== kube context ========'
+        printf '{{.YELLOW}}' >&2
+        echo '{{.KUBECTX}}'
+        printf '{{.BLUE}}' >&2
         echo '=== ArgoCD Login ========'
+        printf '{{.YELLOW}}' >&2
         echo 'username: admin'
         echo 'password: {{.ARGOCD_PASSWORD}}'
+        printf '{{.BLUE}}' >&2
         echo '========================='
         printf '{{.RESET}}' >&2
       - "{{.KUBECTL}} port-forward -n argocd svc/argocd-server 8000:80"
     vars:
+      KUBECTX:
+        sh: "{{.KUBECTL}} config current-context"
       ARGOCD_PASSWORD:
         sh: |
           {{.KUBECTL}} get secret argocd-initial-admin-secret \

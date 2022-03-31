@@ -60,6 +60,28 @@ I pointed `happylittlecloud.xyz` to the digitalocean nameservers in advance so t
 - Configure secrets (either as env vars or with secrets.env)
 - Run `task prod` (or `task all` if you're on linux and have `k3d`)
 
+
+## Log into ArgoCD
+
+Once your clusters are up, switch to the context you'd like to see (either the k3d or prod cluster), and run `task login:argo-cd`. You'll see
+
+```sh
+➜  terragrunt-experiment-infra git:(main) ✗ task login:argo-cd
+=== kube context ========
+k3d-liatrio-demo
+=== ArgoCD Login ========
+username: admin
+password: XXXXXXXXXXXXXXXX
+=========================
+Forwarding from 127.0.0.1:8000 -> 8080
+Forwarding from [::1]:8000 -> 8080
+```
+
+This will print credentials for you, which you can use at `http://localhost:8000`. You'll be able to see most of the services deployed to the cluster in the UI.
+
+![screenshot](.media/argocd.png)
+
+
 ## How to tear down
 
 - Run `task destroy`
