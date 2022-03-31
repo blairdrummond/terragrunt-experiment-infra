@@ -18,3 +18,8 @@ output "cluster_ca_certificate" {
   value = k3d_cluster.cluster.credentials[0].cluster_ca_certificate
   sensitive   = true
 }
+
+output "kubeconfig" {
+  value = k3d_cluster.cluster.credentials[0].raw
+  sensitive   = true
+}

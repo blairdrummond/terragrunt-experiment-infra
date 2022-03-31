@@ -26,6 +26,8 @@ resource "kubernetes_secret" "docker_registry_read" {
   }
 
   type = "kubernetes.io/dockerconfigjson"
+
+  depends_on = [kubernetes_namespace.shipwright_build]
 }
 
 
@@ -64,4 +66,6 @@ resource "kubernetes_secret" "shipwright_github_token" {
   }
 
   type = "kubernetes.io/basic-auth"
+
+  depends_on = [kubernetes_namespace.shipwright_build]
 }

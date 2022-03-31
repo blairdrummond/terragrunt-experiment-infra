@@ -2,6 +2,12 @@ locals {
   domain_name = "happylittlecloud.xyz"
 }
 
+resource "kubernetes_namespace" "web_system" {
+  metadata {
+    name = "web-system"
+  }
+}
+
 resource "kubernetes_ingress" "liatrio" {
   wait_for_load_balancer = true
   metadata {
@@ -25,4 +31,6 @@ resource "kubernetes_ingress" "liatrio" {
       }
     }
   }
+
+  depends_on = [kubernetes_namespace.web_system]
 }

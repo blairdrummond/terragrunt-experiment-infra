@@ -27,8 +27,11 @@ variable "registry_write_token" {
   description = "Registry write token"
 }
 
-
 variable "kubernetes_host" {
+  description = "Kubernetes API endpoint"
+  sensitive   = true
+}
+variable "kubernetes_kubeconfig" {
   description = "Kubernetes API endpoint"
   sensitive   = true
 }
