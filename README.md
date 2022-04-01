@@ -42,8 +42,11 @@ The git credentials are to read the private repositories, and argo events uses a
 
 #### DNS
 
-I pointed `happylittlecloud.xyz` to the digitalocean nameservers in advance so that I can use the domain for the purpose of this demo. If you have a free domain, you can use it --- you need to modify this repo, and unfortunately **you also will need to modify the annotation on the ingress controller in the manifests repo**.
+I pointed `happylittlecloud.xyz` to the digitalocean nameservers in advance so that I can use the domain for the purpose of this demo. If you want to do this too, take a look at [digitalocean's docs on dns-registrars](https://docs.digitalocean.com/tutorials/dns-registrars/).
 
+After configuring your DNS registrar, you need to modify the `environments/prod/dns` domain variable, and unfortunately **you also will need to modify the annotation on the ingress controller in the manifests repo**.
+
+[Example]( https://github.com/blairdrummond/terragrunt-experiment-manifests/blob/b906b56effc66d140a1859dc11c4463cfe80e51c/applications/web-system/liatrio-demo/deploy/ingress.yaml#L11-L14)
 
 ### Tools
 
@@ -61,7 +64,7 @@ I pointed `happylittlecloud.xyz` to the digitalocean nameservers in advance so t
 - Configure secrets (either as env vars or with secrets.env)
 - `. ./secrets.env` (to source the secrets)
 - Run `task prod` (or `task all` if you're on linux and have `k3d`[^1])
-- Wait a few minutes[^2] and run `task prod:dns:apply` 
+- [If you configured a domain](#dns), wait a few minutes[^2] and run `task prod:dns:apply` 
 
 [^1]: It's linux only, I think, because the metallb tool requires a path to a docker socket.
 [^2]: This is because ArgoCD deploys the ingress gateway and loadbalancer, and you need to wait for that load balancer to get initialized to get the IP address. It's possible to get this automatically, but it's a pain.
