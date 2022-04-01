@@ -47,9 +47,11 @@ The git credentials are to read the private repositories, and argo events uses a
 
 I pointed `happylittlecloud.xyz` to the digitalocean nameservers in advance so that I can use the domain for the purpose of this demo. If you want to do this too, take a look at [digitalocean's docs on dns-registrars](https://docs.digitalocean.com/tutorials/dns-registrars/).
 
-After configuring your DNS registrar, you need to modify the `environments/prod/dns` domain variable, and unfortunately **you also will need to modify the annotation on the ingress controller in the manifests repo**.
+After configuring your DNS registrar, you need to modify the `environments/prod/dns` domain variable, and unfortunately **you also will need to modify the annotation on the ingress controller in the manifests repo** and all Ingress objects there.
 
-[Example]( https://github.com/blairdrummond/terragrunt-experiment-manifests/blob/b906b56effc66d140a1859dc11c4463cfe80e51c/applications/web-system/liatrio-demo/deploy/ingress.yaml#L11-L14)
+[The Ingress Gateway variables](https://github.com/blairdrummond/terragrunt-experiment-manifests/blob/b906b56effc66d140a1859dc11c4463cfe80e51c/applications/platform/nginx/application.yaml#L20-L21)
+
+[Example Ingress object needing edits]( https://github.com/blairdrummond/terragrunt-experiment-manifests/blob/b906b56effc66d140a1859dc11c4463cfe80e51c/applications/web-system/liatrio-demo/deploy/ingress.yaml#L11-L14)
 
 ### Tools
 
