@@ -26,6 +26,7 @@ tasks:
     cmds:
       - task: dev
       - task: prod
+      - task: prod:dns
 
   destroy:
     desc: |
@@ -55,21 +56,11 @@ tasks:
   ##################
   ### Dev cluster
   ##################
-  dev:cluster:init:
-    desc: terraform {{.OP}} the {{.ENVIRONMENT}} {{.MODULE}}
-    dir: environments/{{.ENVIRONMENT}}/{{.MODULE}}
-    cmds:
-    - "{{.GRUNT}} {{.OP}}"
-    vars:
-      ENVIRONMENT: dev
-      MODULE: cluster
-      OP: init
-
   dev:cluster:plan:
     desc: terraform {{.OP}} the {{.ENVIRONMENT}} {{.MODULE}}
     dir: environments/{{.ENVIRONMENT}}/{{.MODULE}}
-    deps: ["{{.ENVIRONMENT}}:{{.MODULE}}:init"]
     cmds:
+    - "{{.GRUNT}} init -upgrade"
     - "{{.GRUNT}} {{.OP}}"
     vars:
       ENVIRONMENT: dev
@@ -79,8 +70,8 @@ tasks:
   dev:cluster:apply:
     desc: terraform {{.OP}} the {{.ENVIRONMENT}} {{.MODULE}}
     dir: environments/{{.ENVIRONMENT}}/{{.MODULE}}
-    deps: ["{{.ENVIRONMENT}}:{{.MODULE}}:init"]
     cmds:
+    - "{{.GRUNT}} init -upgrade"
     - "{{.GRUNT}} {{.OP}}"
     vars:
       ENVIRONMENT: dev
@@ -103,21 +94,11 @@ tasks:
 
   ################
   ## Dev platform
-  dev:platform:init:
-    desc: terraform {{.OP}} the {{.ENVIRONMENT}} {{.MODULE}}
-    dir: environments/{{.ENVIRONMENT}}/{{.MODULE}}
-    cmds:
-    - "{{.GRUNT}} {{.OP}}"
-    vars:
-      ENVIRONMENT: dev
-      MODULE: platform
-      OP: init
-
   dev:platform:plan:
     desc: terraform {{.OP}} the {{.ENVIRONMENT}} {{.MODULE}}
     dir: environments/{{.ENVIRONMENT}}/{{.MODULE}}
-    deps: ["{{.ENVIRONMENT}}:{{.MODULE}}:init", "{{.ENVIRONMENT}}:cluster:apply"]
     cmds:
+    - "{{.GRUNT}} init -upgrade"
     - "{{.GRUNT}} {{.OP}}"
     vars:
       ENVIRONMENT: dev
@@ -128,8 +109,8 @@ tasks:
     interactive: true
     desc: terraform {{.OP}} the {{.ENVIRONMENT}} {{.MODULE}}
     dir: environments/{{.ENVIRONMENT}}/{{.MODULE}}
-    deps: ["{{.ENVIRONMENT}}:{{.MODULE}}:init", "{{.ENVIRONMENT}}:cluster:apply"]
     cmds:
+    - "{{.GRUNT}} init -upgrade"
     - "{{.GRUNT}} {{.OP}}"
     vars:
       ENVIRONMENT: dev
@@ -167,21 +148,11 @@ tasks:
   ##################
   ### Prod cluster
   ##################
-  prod:cluster:init:
-    desc: terraform {{.OP}} the {{.ENVIRONMENT}} {{.MODULE}}
-    dir: environments/{{.ENVIRONMENT}}/{{.MODULE}}
-    cmds:
-    - "{{.GRUNT}} {{.OP}}"
-    vars:
-      ENVIRONMENT: prod
-      MODULE: cluster
-      OP: init
-
   prod:cluster:plan:
     desc: terraform {{.OP}} the {{.ENVIRONMENT}} {{.MODULE}}
     dir: environments/{{.ENVIRONMENT}}/{{.MODULE}}
-    deps: ["{{.ENVIRONMENT}}:{{.MODULE}}:init"]
     cmds:
+    - "{{.GRUNT}} init -upgrade"
     - "{{.GRUNT}} {{.OP}}"
     vars:
       ENVIRONMENT: prod
@@ -192,8 +163,8 @@ tasks:
     interactive: true
     desc: terraform {{.OP}} the {{.ENVIRONMENT}} {{.MODULE}}
     dir: environments/{{.ENVIRONMENT}}/{{.MODULE}}
-    deps: ["{{.ENVIRONMENT}}:{{.MODULE}}:init"]
     cmds:
+    - "{{.GRUNT}} init -upgrade"
     - "{{.GRUNT}} {{.OP}}"
     vars:
       ENVIRONMENT: prod
@@ -214,21 +185,11 @@ tasks:
 
   ################
   ## Prod platform
-  prod:platform:init:
-    desc: terraform {{.OP}} the {{.ENVIRONMENT}} {{.MODULE}}
-    dir: environments/{{.ENVIRONMENT}}/{{.MODULE}}
-    cmds:
-    - "{{.GRUNT}} {{.OP}}"
-    vars:
-      ENVIRONMENT: prod
-      MODULE: platform
-      OP: init
-
   prod:platform:plan:
     desc: terraform {{.OP}} the {{.ENVIRONMENT}} {{.MODULE}}
     dir: environments/{{.ENVIRONMENT}}/{{.MODULE}}
-    deps: ["{{.ENVIRONMENT}}:{{.MODULE}}:init", "{{.ENVIRONMENT}}:cluster:apply"]
     cmds:
+    - "{{.GRUNT}} init -upgrade"
     - "{{.GRUNT}} {{.OP}}"
     vars:
       ENVIRONMENT: prod
@@ -239,8 +200,8 @@ tasks:
     interactive: true
     desc: terraform {{.OP}} the {{.ENVIRONMENT}} {{.MODULE}}
     dir: environments/{{.ENVIRONMENT}}/{{.MODULE}}
-    deps: ["{{.ENVIRONMENT}}:{{.MODULE}}:init", "{{.ENVIRONMENT}}:cluster:apply"]
     cmds:
+    - "{{.GRUNT}} init -upgrade"
     - "{{.GRUNT}} {{.OP}}"
     vars:
       ENVIRONMENT: prod
@@ -273,6 +234,33 @@ tasks:
       ENVIRONMENT: prod
       MODULE: platform
       OP: destroy
+
+  #################################
+  ### DNS & Domains
+  #################################
+  prod:dns:plan:
+    desc: Point domain to ingress gateway loadbalancer
+    interactive: true
+    dir: environments/{{.ENVIRONMENT}}/{{.MODULE}}
+    cmds:
+    - "{{.GRUNT}} init -upgrade"
+    - "{{.GRUNT}} {{.OP}}"
+    vars:
+      ENVIRONMENT: prod
+      MODULE: dns
+      OP: plan
+
+  prod:dns:apply:
+    desc: Point domain to ingress gateway loadbalancer
+    interactive: true
+    dir: environments/{{.ENVIRONMENT}}/{{.MODULE}}
+    cmds:
+    - "{{.GRUNT}} init -upgrade"
+    - "{{.GRUNT}} {{.OP}}"
+    vars:
+      ENVIRONMENT: prod
+      MODULE: dns
+      OP: apply
 
   #################################
   ### Utilities / Port-Forwards
