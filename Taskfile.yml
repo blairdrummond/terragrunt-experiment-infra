@@ -1,6 +1,6 @@
 version: "3"
 
-dotenv: ['secrets.env']
+# dotenv: ['secrets.env']
 env:
   TF_VAR_cluster_name: liatrio-demo
 

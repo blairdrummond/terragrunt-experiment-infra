@@ -58,6 +58,7 @@ I pointed `happylittlecloud.xyz` to the digitalocean nameservers in advance so t
 
 - Pray to the demo gods
 - Configure secrets (either as env vars or with secrets.env)
+- `. ./secrets.env` (to source the secrets)
 - Run `task prod` (or `task all` if you're on linux and have `k3d`)
 
 
