@@ -60,7 +60,11 @@ I pointed `happylittlecloud.xyz` to the digitalocean nameservers in advance so t
 - Pray to the demo gods
 - Configure secrets (either as env vars or with secrets.env)
 - `. ./secrets.env` (to source the secrets)
-- Run `task prod` (or `task all` if you're on linux and have `k3d`)
+- Run `task prod` (or `task all` if you're on linux and have `k3d`[^1])
+- Wait a few minutes[^2] and run `task prod:dns:apply` 
+
+[^1]: It's linux only, I think, because the metallb tool requires a path to a docker socket.
+[^2]: This is because ArgoCD deploys the ingress gateway and loadbalancer, and you need to wait for that load balancer to get initialized to get the IP address. It's possible to get this automatically, but it's a pain.
 
 ## Log into ArgoCD
 
