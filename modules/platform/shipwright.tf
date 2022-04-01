@@ -27,7 +27,10 @@ resource "kubernetes_secret" "docker_registry_read" {
 
   type = "kubernetes.io/dockerconfigjson"
 
-  depends_on = [kubernetes_namespace.shipwright_build]
+  depends_on = [
+    kubernetes_namespace.shipwright_build,
+    kubernetes_namespace.web_system
+  ]
 }
 
 
