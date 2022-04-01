@@ -4,11 +4,14 @@
 
 ### Secrets & Variables
 
-**tl;dr**
+**tl;dr, you'll need**
 
 - Docker secrets
 - Github API token (read/write)
 - A digital ocean API token
+- `doctl,terraform,terragrunt,task`. See [tools](#tools).
+
+-----------
 
 The module currently requires the following secrets
 
