@@ -277,6 +277,12 @@ tasks:
   #################################
   ### Utilities / Port-Forwards
   #################################
+  login:doctl:
+    desc: Log into Digital Ocean (get a kubeconfig)
+    interactive: true
+    cmds:
+    - doctl kubernetes cluster kubeconfig save $TF_VAR_cluster_name
+
   login:argo-workflows:
     desc: Get the Argo Workflows token
     interactive: true

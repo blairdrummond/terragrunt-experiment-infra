@@ -47,6 +47,7 @@ I pointed `happylittlecloud.xyz` to the digitalocean nameservers in advance so t
 
 ### Tools
 
+- doctl
 - terragrunt
 - terraform
 - [task](https://taskfile.dev/#/installation)
@@ -61,8 +62,10 @@ I pointed `happylittlecloud.xyz` to the digitalocean nameservers in advance so t
 - `. ./secrets.env` (to source the secrets)
 - Run `task prod` (or `task all` if you're on linux and have `k3d`)
 
-
 ## Log into ArgoCD
+
+
+**Note, you may first want to run `task login:doctl` to log into digitalocean.**
 
 Once your clusters are up, switch to the context you'd like to see (either the k3d or prod cluster), and run `task login:argo-cd`. You'll see
 
