@@ -12,7 +12,7 @@ dependency "platform" {
 }
 
 terraform {
-  source = "../../../modules/dns/digitalocean"
+  source = "../../../modules/dns/none"
 }
 
 inputs = {
@@ -28,22 +28,18 @@ generate "provider" {
   path = "provider.tf"
   if_exists = "overwrite_terragrunt"
   contents = <<EOF
-provider "digitalocean" {
-  token = var.do_token
-}
-
 provider "kubernetes" {
   host = var.kubernetes_host
-
+  client_certificate     = var.kubernetes_client_certificate
+  client_key             = var.kubernetes_client_key
   cluster_ca_certificate = var.kubernetes_cluster_ca_certificate
-  token                  = var.kubernetes_kubeconfig
 }
 
 provider "kubectl" {
   host = var.kubernetes_host
-
+  client_certificate     = var.kubernetes_client_certificate
+  client_key             = var.kubernetes_client_key
   cluster_ca_certificate = var.kubernetes_cluster_ca_certificate
-  token                  = var.kubernetes_kubeconfig
 }
 EOF
 }

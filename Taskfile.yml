@@ -26,7 +26,8 @@ tasks:
     cmds:
       - task: dev
       - task: prod
-      - task: prod:dns
+      - task: dev:dns:apply
+      - task: prod:dns:apply
 
   destroy:
     desc: |
@@ -117,6 +118,32 @@ tasks:
       MODULE: platform
       OP: apply
 
+  dev:dns:plan:
+    desc: Mock a certificate issuer
+    interactive: true
+    dir: environments/{{.ENVIRONMENT}}/{{.MODULE}}
+    cmds:
+    - "{{.GRUNT}} init -upgrade"
+    - "{{.GRUNT}} {{.OP}}"
+    vars:
+      ENVIRONMENT: dev
+      MODULE: dns
+      OP: plan
+
+  dev:dns:apply:
+    desc: Point domain to ingress gateway loadbalancer
+    interactive: true
+    dir: environments/{{.ENVIRONMENT}}/{{.MODULE}}
+    cmds:
+    - "{{.GRUNT}} init -upgrade"
+    - "{{.GRUNT}} {{.OP}}"
+    vars:
+      ENVIRONMENT: dev
+      MODULE: dns
+      OP: apply
+
+
+
   # This times out
   # # Note! Dependency order is reversed
   # dev:platform:destroy:
@@ -135,12 +162,25 @@ tasks:
     desc: terraform {{.OP}} the {{.ENVIRONMENT}} {{.MODULE}}
     interactive: true
     dir: environments/{{.ENVIRONMENT}}/{{.MODULE}}
+    deps: ["{{.ENVIRONMENT}}:dns:destroy"]
     cmds:
     - cmd: "rm -fi terraform.tfstate terraform.tfstate.backup"
       ignore_error: true
     vars:
       ENVIRONMENT: dev
       MODULE: platform
+      OP: destroy
+
+  dev:dns:destroy:
+    desc: Tear down domain
+    interactive: true
+    dir: environments/{{.ENVIRONMENT}}/{{.MODULE}}
+    cmds:
+    - "{{.GRUNT}} init -upgrade"
+    - "{{.GRUNT}} {{.OP}}"
+    vars:
+      ENVIRONMENT: dev
+      MODULE: dns
       OP: destroy
 
 
@@ -261,6 +301,18 @@ tasks:
       ENVIRONMENT: prod
       MODULE: dns
       OP: apply
+
+  prod:dns:destroy:
+    desc: Tear down domain
+    interactive: true
+    dir: environments/{{.ENVIRONMENT}}/{{.MODULE}}
+    cmds:
+    - "{{.GRUNT}} init -upgrade"
+    - "{{.GRUNT}} {{.OP}}"
+    vars:
+      ENVIRONMENT: prod
+      MODULE: dns
+      OP: destroy
 
   #################################
   ### Utilities / Port-Forwards
