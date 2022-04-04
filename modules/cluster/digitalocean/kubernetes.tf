@@ -9,7 +9,7 @@ resource "digitalocean_kubernetes_cluster" "cluster" {
     # doctl kubernetes options sizes
     size       = "s-2vcpu-4gb"
     auto_scale = true
-    min_nodes  = 1
+    min_nodes  = 2
     max_nodes  = 3
   }
 }

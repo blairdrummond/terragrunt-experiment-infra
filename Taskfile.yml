@@ -373,4 +373,54 @@ tasks:
             -n argocd \
             -o jsonpath="{.data.password}" | base64 -d
 
+  buildrun:rebuild:
+    desc: rebuild the demo-app images
+    cmds:
+    - task: buildrun:prune
+    - cmd: echo "wait for deletion"
+    - task: buildrun:wait
+    - task: imago
 
+  buildrun:prune:
+    desc: remove old buildruns
+    cmds:
+      - |
+          kubectl delete buildruns.shipwright.io \
+            -n shipwright-build --all
+
+  buildrun:wait:
+    desc: wait for rebuilds to finish
+    cmds:
+    - |
+        set -o pipefail;
+        while {{.KUBECTL}} get buildruns.shipwright.io \
+          -n shipwright-build -o json \
+          | jq -e '.items | length == 0' > /dev/null; do
+          echo "Waiting for buildruns to spawn...";
+          sleep 10;
+        done
+    - |
+        set -o pipefail;
+        while {{.KUBECTL}} get buildruns.shipwright.io \
+           -n shipwright-build -o json \
+           | jq -e '.items | any(.status.output == null)' > /dev/null; do
+           {{.KUBECTL}} get buildruns.shipwright.io -n shipwright-build;
+           echo "Some buildruns have not finished. Waiting...";
+           sleep 5;
+        done
+
+  imago:
+    desc: refresh images from new sha
+    deps: [buildrun:wait]
+    interactive: true
+    silent: false
+    cmds:
+      - |
+          kubectl delete jobs -n web-system \
+            --field-selector status.successful=1
+      - |
+          kubectl create job -n web-system \
+            --from=cronjob/imago imago-{{.TIMESTAMP}}
+    vars:
+      TIMESTAMP:
+        sh: "date +'%s'"
